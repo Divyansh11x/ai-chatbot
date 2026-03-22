@@ -1,36 +1,127 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🤖 AI Chatbot (Next.js + MongoDB)
 
-## Getting Started
+A full-stack AI chatbot application built using **Next.js 16**, **MongoDB**, and modern React features.
+It supports real-time chat interaction with a clean UI and persistent chat history.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🚀 Features
+
+* 💬 Real-time chat interface
+* ⚡ Fast UI with Next.js (App Router)
+* 🧠 AI-powered responses
+* 💾 Chat history stored in MongoDB
+* ✨ Typing animation effect
+* 🎨 Clean and responsive UI
+
+---
+
+## 🛠️ Tech Stack
+
+* **Frontend:** Next.js, React, Tailwind CSS
+* **Backend:** Next.js API Routes
+* **Database:** MongoDB (Mongoose)
+* **Language:** TypeScript
+
+---
+
+## 📂 Project Structure
+
+```
+ai-chatbot/
+│── app/
+│   ├── api/
+│   │   ├── chat/
+│   │   └── history/
+│   ├── page.tsx
+│
+│── components/
+│   └── ChatBox.tsx
+│
+│── lib/
+│   └── mongodb.ts
+│
+│── models/
+│   └── Chat.ts
+│
+│── .env.local
+│── package.json
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ⚙️ Setup Instructions
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1️⃣ Clone the repository
 
-## Learn More
+```
+git clone https://github.com/Divyansh11x/ai-chatbot.git
+cd ai-chatbot
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 2️⃣ Install dependencies
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+npm install
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 3️⃣ Setup environment variables
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Create a file:
+
+```
+.env.local
+```
+
+Add:
+
+```
+MONGODB_URI=your_mongodb_connection_string
+```
+
+---
+
+### 4️⃣ Run the project
+
+```
+npm run dev
+```
+
+Open:
+
+```
+http://localhost:3000
+```
+
+---
+
+## ⚠️ Known Issues
+
+* MongoDB authentication error if credentials are incorrect
+* Ensure network access is enabled in MongoDB Atlas
+
+---
+
+## 📈 Future Improvements
+
+* 🔐 User authentication
+* 🌐 Deployment (Vercel)
+* 📊 Chat analytics
+* 🤖 Streaming AI responses
+
+---
+
+## 👨‍💻 Author
+
+**Divyansh**
+GitHub: https://github.com/Divyansh11x
+
+---
+
+## ⭐ Show your support
+
+If you like this project, give it a ⭐ on GitHub!
