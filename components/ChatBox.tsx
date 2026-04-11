@@ -44,21 +44,13 @@ export default function ChatBox() {
     recognition.lang = "en-US";
     recognition.interimResults = false;
 
-    recognition.onstart = () => {
-      console.log("🎤 Listening...");
-      setListening(true);
-    };
-
-    recognition.onend = () => {
-      console.log("🎤 Stopped");
-      setListening(false);
-    };
+    recognition.onstart = () => setListening(true);
+    recognition.onend = () => setListening(false);
 
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
       setMessage(transcript);
 
-      // Auto send after voice
       setTimeout(() => {
         sendMessage(transcript);
       }, 500);
@@ -70,20 +62,31 @@ export default function ChatBox() {
       if (event.error === "not-allowed") {
         alert("Please allow microphone access.");
       }
-
-      if (event.error === "no-speech") {
-        console.log("No speech detected.");
-      }
     };
 
     recognition.start();
   };
 
+  // 🗑️ CLEAR CHAT (WITH CONFIRMATION POPUP)
+  const clearChat = async () => {
+    if (!confirm("Are you sure you want to delete all chats?")) return;
+
+    try {
+      await fetch("/api/clear", {
+        method: "DELETE",
+      });
+
+      setChat([]);
+    } catch (error) {
+      console.error("Clear failed", error);
+    }
+  };
+
   // 📥 LOAD HISTORY
   useEffect(() => {
     fetch("/api/history")
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         if (Array.isArray(data)) setChat(data);
       })
       .catch(() => setChat([]));
@@ -93,7 +96,7 @@ export default function ChatBox() {
   useEffect(() => {
     chatRef.current?.scrollTo({
       top: chatRef.current.scrollHeight,
-      behavior: "smooth"
+      behavior: "smooth",
     });
   }, [chat]);
 
@@ -103,18 +106,20 @@ export default function ChatBox() {
 
     if (!finalMessage || loading) return;
 
-    setChat(prev => [...prev, { role: "user", text: finalMessage }]);
+    setChat((prev) => [
+      ...prev,
+      { role: "user", text: finalMessage },
+      { role: "assistant", text: "Typing..." },
+    ]);
+
     setMessage("");
     setLoading(true);
-
-    // typing placeholder
-    setChat(prev => [...prev, { role: "assistant", text: "Typing..." }]);
 
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: finalMessage })
+        body: JSON.stringify({ message: finalMessage }),
       });
 
       const data = await res.json();
@@ -124,24 +129,22 @@ export default function ChatBox() {
 
       for (let i = 0; i < fullText.length; i++) {
         currentText += fullText[i];
-        await new Promise(r => setTimeout(r, 15));
+        await new Promise((r) => setTimeout(r, 15));
 
-        setChat(prev => {
+        setChat((prev) => {
           const updated = [...prev];
           updated[updated.length - 1] = {
             role: "assistant",
-            text: currentText
+            text: currentText,
           };
           return updated;
         });
       }
 
-      // 🔊 SPEAK RESPONSE
       speakText(fullText);
-
     } catch (error) {
       console.error(error);
-      setChat(prev => prev.filter(m => m.text !== "Typing..."));
+      setChat((prev) => prev.filter((m) => m.text !== "Typing..."));
     } finally {
       setLoading(false);
     }
@@ -150,11 +153,35 @@ export default function ChatBox() {
   return (
     <div className="flex flex-col h-screen bg-black text-white p-4">
 
+      {/* TOP BAR */}
+      <div className="flex justify-between items-center mb-3">
+        <h1 className="text-xl font-bold tracking-wide">
+          🤖 AI Chatbot
+        </h1>
+
+        <button
+          onClick={clearChat}
+          className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded-lg text-sm"
+        >
+          Clear Chat
+        </button>
+      </div>
+
       {/* CHAT AREA */}
       <div
         ref={chatRef}
-        className="flex-1 overflow-y-auto space-y-4 p-4 border rounded-lg"
+        className="flex-1 overflow-y-auto space-y-5 p-4 border border-gray-700 rounded-xl shadow-lg"
       >
+
+        {/* Empty state */}
+        {chat.length === 0 && (
+          <div className="flex flex-col items-center justify-center text-gray-500 mt-20 space-y-2">
+            <p className="text-lg">Start a conversation 👇</p>
+            <p className="text-sm opacity-70">Type or use 🎤 voice</p>
+          </div>
+        )}
+
+        {/* Messages */}
         {chat.map((c, i) => (
           <div
             key={i}
@@ -162,12 +189,12 @@ export default function ChatBox() {
               }`}
           >
             <div
-              className={`px-4 py-2 rounded-2xl max-w-[70%] ${c.role === "user"
-                  ? "bg-blue-600"
+              className={`px-5 py-3 rounded-2xl max-w-[60%] transition-all duration-200 ${c.role === "user"
+                  ? "bg-gradient-to-r from-blue-500 to-blue-700 text-white"
                   : "bg-gray-800 text-gray-200"
                 }`}
             >
-              <div className="prose prose-invert max-w-none">
+              <div className="prose prose-invert max-w-none break-words">
                 <ReactMarkdown>
                   {c.text}
                 </ReactMarkdown>
@@ -175,13 +202,14 @@ export default function ChatBox() {
             </div>
           </div>
         ))}
+
       </div>
 
       {/* INPUT AREA */}
       <div className="flex mt-4 gap-2">
 
         <input
-          className="flex-1 p-3 rounded-lg bg-gray-900 border border-gray-700 outline-none"
+          className="flex-1 p-3 rounded-lg bg-gray-900 border border-gray-700 outline-none focus:ring-2 focus:ring-blue-500"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type your message..."
@@ -189,7 +217,7 @@ export default function ChatBox() {
           disabled={loading}
         />
 
-        {/* 🎤 VOICE BUTTON */}
+        {/* VOICE BUTTON */}
         <button
           onClick={startListening}
           className={`px-4 py-2 rounded-lg ${listening
@@ -202,12 +230,11 @@ export default function ChatBox() {
 
         <button
           onClick={() => sendMessage()}
-          className="bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg"
+          className="bg-gradient-to-r from-blue-500 to-blue-700 hover:scale-105 transition px-5 py-2 rounded-lg"
           disabled={loading}
         >
           Send
         </button>
-
       </div>
     </div>
   );
