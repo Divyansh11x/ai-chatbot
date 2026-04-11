@@ -14,22 +14,24 @@ export default function ChatBox() {
   const chatRef = useRef<HTMLDivElement>(null);
 
   // ✅ Load chat history on page load with validation
-  useEffect(() => {
-    fetch("/api/history")
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          setChat(data);
-        } else {
-          console.error("Invalid response:", data);
-          setChat([]);
-        }
-      })
-      .catch(err => {
-        console.error(err);
+ useEffect(() => {
+  fetch("/api/history")
+    .then(res => res.json())
+    .then(data => {
+      console.log("DATA:", data); // debug
+
+      if (Array.isArray(data)) {
+        setChat(data);
+      } else {
+        console.error("Invalid response:", data);
         setChat([]);
-      });
-  }, []);
+      }
+    })
+    .catch(err => {
+      console.error("Fetch error:", err);
+      setChat([]);
+    });
+}, []);
 
   // ✅ Auto scroll to bottom when chat updates
   useEffect(() => {
@@ -86,7 +88,7 @@ export default function ChatBox() {
         ref={chatRef}
         className="flex-1 overflow-y-auto space-y-4 p-4 border rounded-lg"
       >
-        {chat.map((c, i) => (
+        {Array.isArray(chat) && chat.map((c, i) => (
           <div
             key={i}
             className={`flex ${c.role === "user" ? "justify-end" : "justify-start"}`}
@@ -98,7 +100,7 @@ export default function ChatBox() {
                   : "bg-gray-800 text-gray-200"
               }`}
             >
-              {c.text}
+              {c.text || c.message}
             </div>
           </div>
         ))}

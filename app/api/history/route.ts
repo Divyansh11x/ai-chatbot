@@ -7,11 +7,15 @@ export async function GET() {
 
     const chats = await Chat.find().sort({ createdAt: 1 });
 
-    console.log("Chats:", chats); // 👈 ADD THIS
+    console.log("Chats:", chats);
 
     return Response.json(chats);
-  } catch (error) {
-    console.error("API ERROR:", error); // 👈 ADD THIS
-    return Response.json({ error: "Failed to fetch history" }, { status: 500 });
+  } catch (error: any) {
+    console.error("FULL ERROR:", error); // 👈 IMPORTANT
+
+    return Response.json(
+      { error: error.message || "Failed to fetch history" },
+      { status: 500 }
+    );
   }
 }
