@@ -65,7 +65,7 @@ Rules:
     console.error("FULL ERROR:", error);
 
     return Response.json({
-      reply: "Backend error aa gaya"
+      reply: "Oops! Something went wrong 😅"
     });
   }
 }

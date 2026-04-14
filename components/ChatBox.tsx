@@ -15,17 +15,22 @@ export default function ChatBox() {
   const [loading, setLoading] = useState(false);
   const [listening, setListening] = useState(false);
 
+  const [voiceOn, setVoiceOn] = useState(false);
+
   const chatRef = useRef<HTMLDivElement>(null);
 
   // 🔊 TEXT TO SPEECH
   const speakText = (text: string) => {
+    if (!voiceOn) return; // ✅ control added
+
     if (!("speechSynthesis" in window)) return;
+
+    window.speechSynthesis.cancel();
 
     const speech = new SpeechSynthesisUtterance(text);
     speech.lang = "en-US";
     speech.rate = 1;
 
-    window.speechSynthesis.cancel();
     window.speechSynthesis.speak(speech);
   };
 
@@ -142,7 +147,12 @@ export default function ChatBox() {
         });
       }
 
-      speakText(fullText);
+      // ✅ Speak only after typing finished
+      if (voiceOn) {
+        speakText(fullText);
+      }
+
+
     } catch (error) {
       console.error(error);
       setChat((prev) => prev.filter((m) => m.text !== "Typing..."));
@@ -242,7 +252,19 @@ export default function ChatBox() {
           disabled={loading}
         />
 
-        {/* VOICE BUTTON */}
+        {/* 🔊 VOICE TOGGLE */}
+        <button
+          title={voiceOn ? "Voice ON" : "Voice OFF"}
+          onClick={() => setVoiceOn(!voiceOn)}
+          className={`px-3 py-2 rounded-lg transition-all duration-200 ${voiceOn
+              ? "bg-green-600 hover:bg-green-500 shadow-md shadow-green-500/30"
+              : "bg-gray-700 hover:bg-gray-600"
+            }`}
+        >
+          {voiceOn ? "🔊" : "🔇"}
+        </button>
+
+        {/* 🎤 SPEECH INPUT */}
         <button
           onClick={startListening}
           className={`px-4 py-2 rounded-lg ${listening
@@ -253,6 +275,7 @@ export default function ChatBox() {
           🎤
         </button>
 
+        {/* SEND BUTTON */}
         <button
           onClick={() => sendMessage()}
           className="bg-gradient-to-r from-blue-500 to-blue-700 hover:scale-105 transition px-5 py-2 rounded-lg"
