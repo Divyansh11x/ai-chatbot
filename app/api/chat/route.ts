@@ -24,14 +24,32 @@ export async function POST(req: Request) {
       model: "gemini-2.5-flash"
     });
 
-    const result = await model.generateContent({
-      contents: [
+    // ✅ Use chat system for better control
+    const chat = model.startChat({
+      history: [
         {
           role: "user",
-          parts: [{ text: message }]
+          parts: [
+            {
+              text: `
+You are a helpful AI assistant.
+
+Rules:
+- Give short answers (max 4-5 lines)
+- Use simple and clear language
+- Use proper markdown formatting
+- Use code blocks ONLY for actual code
+- Always include language in code blocks (like \`\`\`javascript)
+- Do NOT wrap normal text in code blocks
+- Keep responses clean and readable
+`
+            }
+          ]
         }
       ]
     });
+
+    const result = await chat.sendMessage(message);
 
     const text = result.response.text();
 

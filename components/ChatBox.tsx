@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 
 type Message = {
   role: "user" | "assistant";
@@ -190,12 +191,36 @@ export default function ChatBox() {
           >
             <div
               className={`px-5 py-3 rounded-2xl max-w-[60%] transition-all duration-200 ${c.role === "user"
-                  ? "bg-gradient-to-r from-blue-500 to-blue-700 text-white"
-                  : "bg-gray-800 text-gray-200"
+                ? "bg-gradient-to-r from-blue-500 to-blue-700 text-white"
+                : "bg-gray-800 text-gray-200"
                 }`}
             >
               <div className="prose prose-invert max-w-none break-words">
-                <ReactMarkdown>
+                <ReactMarkdown
+                  components={{
+                    p({ children }) {
+                      return <>{children}</>;
+                    },
+
+                    code({ inline, className, children }) {
+                      const match = /language-(\w+)/.exec(className || "");
+
+                      if (!inline && match) {
+                        return (
+                          <SyntaxHighlighter language={match[1]}>
+                            {String(children).replace(/\n$/, "")}
+                          </SyntaxHighlighter>
+                        );
+                      }
+
+                      return (
+                        <code className="bg-gray-700 px-1 py-0.5 rounded">
+                          {children}
+                        </code>
+                      );
+                    },
+                  }}
+                >
                   {c.text}
                 </ReactMarkdown>
               </div>
