@@ -212,8 +212,9 @@ export default function ChatBox() {
                       return <>{children}</>;
                     },
 
-                    code({ inline, className, children }) {
+                    code({ className, children, ...props }: any) {
                       const match = /language-(\w+)/.exec(className || "");
+                      const inline = Boolean(props.inline);
 
                       if (!inline && match) {
                         return (
