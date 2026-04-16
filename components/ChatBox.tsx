@@ -162,10 +162,10 @@ export default function ChatBox() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-black text-white p-4">
+    <div className="flex h-dvh min-h-dvh w-full flex-col bg-black px-3 py-3 text-white sm:px-5 sm:py-4 lg:px-8">
 
       {/* TOP BAR */}
-      <div className="flex justify-between items-center mb-3">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-xl font-bold tracking-wide">
           🤖 AI Chatbot
         </h1>
@@ -181,7 +181,7 @@ export default function ChatBox() {
       {/* CHAT AREA */}
       <div
         ref={chatRef}
-        className="flex-1 overflow-y-auto space-y-5 p-4 border border-gray-700 rounded-xl shadow-lg"
+        className="min-h-0 flex-1 space-y-5 overflow-y-auto rounded-xl border border-gray-700 p-3 shadow-lg sm:p-4"
       >
 
         {/* Empty state */}
@@ -200,7 +200,7 @@ export default function ChatBox() {
               }`}
           >
             <div
-              className={`px-5 py-3 rounded-2xl max-w-[60%] transition-all duration-200 ${c.role === "user"
+              className={`max-w-[90%] rounded-2xl px-4 py-3 transition-all duration-200 sm:max-w-[75%] md:max-w-[68%] lg:max-w-[60%] ${c.role === "user"
                 ? "bg-gradient-to-r from-blue-500 to-blue-700 text-white"
                 : "bg-gray-800 text-gray-200"
                 }`}
@@ -242,10 +242,10 @@ export default function ChatBox() {
       </div>
 
       {/* INPUT AREA */}
-      <div className="flex mt-4 gap-2">
+      <div className="mt-4 flex flex-wrap gap-2 md:flex-nowrap">
 
         <input
-          className="flex-1 p-3 rounded-lg bg-gray-900 border border-gray-700 outline-none focus:ring-2 focus:ring-blue-500"
+          className="min-w-0 flex-[1_1_260px] rounded-lg border border-gray-700 bg-gray-900 p-3 outline-none focus:ring-2 focus:ring-blue-500"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type your message..."
@@ -257,7 +257,7 @@ export default function ChatBox() {
         <button
           title={voiceOn ? "Voice ON" : "Voice OFF"}
           onClick={() => setVoiceOn(!voiceOn)}
-          className={`px-3 py-2 rounded-lg transition-all duration-200 ${voiceOn
+          className={`min-h-12 rounded-lg px-3 py-2 transition-all duration-200 ${voiceOn
               ? "bg-green-600 hover:bg-green-500 shadow-md shadow-green-500/30"
               : "bg-gray-700 hover:bg-gray-600"
             }`}
@@ -268,7 +268,7 @@ export default function ChatBox() {
         {/* 🎤 SPEECH INPUT */}
         <button
           onClick={startListening}
-          className={`px-4 py-2 rounded-lg ${listening
+          className={`min-h-12 rounded-lg px-4 py-2 ${listening
             ? "bg-red-600 animate-pulse"
             : "bg-gray-700 hover:bg-gray-600"
             }`}
@@ -279,7 +279,7 @@ export default function ChatBox() {
         {/* SEND BUTTON */}
         <button
           onClick={() => sendMessage()}
-          className="bg-gradient-to-r from-blue-500 to-blue-700 hover:scale-105 transition px-5 py-2 rounded-lg"
+          className="min-h-12 rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 px-5 py-2 transition hover:scale-105"
           disabled={loading}
         >
           Send
